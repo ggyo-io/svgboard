@@ -6,7 +6,6 @@ export const onTouchCancel = (e) => console.log('onTouchCancel', e)
 export const onTouchEnd = (e) => console.log('onTouchEnd', e)
 export const onTouchMove = (e) => console.log('onTouchMove', e)
 export const onTouchStart = (e) => console.log('onTouchStart', e)
-export const onClick = (e) => console.log('onClick', e)
 export const onDoubleClick = (e) => console.log('onDoubleClick', e)
 
 export const

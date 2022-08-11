@@ -13,7 +13,7 @@ import wK from './chesspieces/merida/wK';
 import {square2coord, coord2square} from './Utils';
 import {onTouchStart, onTouchMove, onTouchEnd, onTouchCancel} from './Pointer';
 
-import {onClick, onDoubleClick, onMouseDown,
+import {onDoubleClick, onMouseDown,
     onMouseMove, onMouseOut, onMouseOver, onMouseUp}  from './Pointer';
 
 const renderPosition = (position, squareSize, orientation) => {
@@ -62,9 +62,11 @@ function Board(props) {
 
     return (
         <svg width={width} height={width}
-            onClick={onClick} onDoubleClick={onDoubleClick}
+            onClick={onMouseUp} onDoubleClick={onDoubleClick}
             onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={onTouchCancel}
-            onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseOut={onMouseOut} onMouseOver={onMouseOver} onMouseUp={onMouseUp}
+            onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseOut={onMouseOut} onMouseOver={onMouseOver}
+            onMouseLeave={onMouseUp}
+
         >
             <defs>
                 <rect id="square" width={squareSize} height={squareSize} rx={squareSize/8}/>

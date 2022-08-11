@@ -21,7 +21,7 @@ export const start = () => ({
     "b7" : "bP",
     "c7" : "bP",
     "d7" : "bP",
-    "e7" : "bP",
+    "e5" : "bP",
     "f7" : "bP",
     "g7" : "bP",
     "h7" : "bP",
