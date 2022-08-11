@@ -11,6 +11,10 @@ import wB from './chesspieces/merida/wB';
 import wQ from './chesspieces/merida/wQ';
 import wK from './chesspieces/merida/wK';
 import {square2coord, coord2square} from './Utils';
+import {onTouchStart, onTouchMove, onTouchEnd, onTouchCancel} from './Pointer';
+
+import {onClick, onDoubleClick, onMouseDown,
+    onMouseMove, onMouseOut, onMouseOver, onMouseUp}  from './Pointer';
 
 const renderPosition = (position, squareSize, orientation) => {
     return position ? 
@@ -18,10 +22,13 @@ const renderPosition = (position, squareSize, orientation) => {
         Object.keys(position).map( (square) => {
             const piece = position[square];
             const c = square2coord(square, orientation);
+            const pid = square + piece;
             return (
                 <use
                     href={"#" + piece}
+                    piece={piece} square={square}
                     key={square}
+                    pid={pid}
                     x={c.x*squareSize}
                     y={c.y*squareSize}
                     width={squareSize}
@@ -53,10 +60,12 @@ function Board(props) {
     console.log("width", width, "orientation", orientation, "position", position);
     const squareSize = width / 8;
 
-    const onClick = (e) => console.log('onclick', e)
-
     return (
-        <svg width={width} height={width} onClick={onClick}>
+        <svg width={width} height={width}
+            onClick={onClick} onDoubleClick={onDoubleClick}
+            onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={onTouchCancel}
+            onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseOut={onMouseOut} onMouseOver={onMouseOver} onMouseUp={onMouseUp}
+        >
             <defs>
                 <rect id="square" width={squareSize} height={squareSize} rx={squareSize/8}/>
                 {bP()}{bR()}{bN()}{bB()}{bQ()}{bK()}

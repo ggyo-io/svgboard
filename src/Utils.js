@@ -12,7 +12,7 @@ export const start = () => ({
     "b2" : "wP",
     "c2" : "wP",
     "d2" : "wP",
-    "e2" : "wP",
+    "e4" : "wP",
     "f2" : "wP",
     "g2" : "wP",
     "h2" : "wP",
