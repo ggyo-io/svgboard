@@ -1,3 +1,4 @@
+import React, { useState, useRef } from "react";
 import bB from './chesspieces/merida/bB';
 import bK from './chesspieces/merida/bK';
 import bQ from './chesspieces/merida/bQ';
@@ -10,71 +11,73 @@ import wN from './chesspieces/merida/wN';
 import wB from './chesspieces/merida/wB';
 import wQ from './chesspieces/merida/wQ';
 import wK from './chesspieces/merida/wK';
-import {square2coord, coord2square} from './Utils';
-import {onTouchStart, onTouchMove, onTouchEnd, onTouchCancel} from './Pointer';
-
-import {onDoubleClick, onMouseDown,
-    onMouseMove, onMouseOut, onMouseOver, onMouseUp}  from './Pointer';
-
-const renderPosition = (position, squareSize, orientation) => {
-    return position ? 
-    (
-        Object.keys(position).map( (square) => {
-            const piece = position[square];
-            const c = square2coord(square, orientation);
-            const pid = square + piece;
-            return (
-                <use
-                    href={"#" + piece}
-                    piece={piece} square={square}
-                    key={square}
-                    pid={pid}
-                    x={c.x*squareSize}
-                    y={c.y*squareSize}
-                    width={squareSize}
-                    height={squareSize}
-                />
-            );
-        })
-    ) : null;
-};           
-
-const renderRow = ( y, squareSize, orientation ) =>
-    [...Array(8).keys()].map( (x) =>
-    (
-        <use
-            href="#square"
-            key={coord2square({x, y}, orientation)}
-            square={coord2square({x, y}, orientation)}
-            x={x*squareSize} y={y*squareSize} fill={ x % 2 === y % 2 ? "#f0d9b5" : "#b58863" }
-        />
-    ))
-
-const renderSquares = (squareSize, orientation) => 
-    [...Array(8).keys()].map( (y) => 
-        renderRow(y, squareSize, orientation)
-    )
+import { renderSquares, renderPieceOrder, renderPieces, } from './Render';
 
 function Board(props) {
-    const {width, position, orientation} = props;
-    console.log("width", width, "orientation", orientation, "position", position);
+    const svgRef = useRef();
+    const [mouseOverPiece, setMouseOverPiece] = useState(null)
+    const [draggedPiece, setDraggedPiece] = useState(null)
+
+    const onMouseDown = (e) => {
+        if (!mouseOverPiece) return;
+        const el = svgRef.current.querySelector('[pid="' + mouseOverPiece.square.value + mouseOverPiece.piece.value + '"]');
+
+        setDraggedPiece({
+            el,
+            clientX: parseInt(e.clientX),
+            clientY: parseInt(e.clientY),
+            x: parseInt(el.getAttribute('x')),
+            y: parseInt(el.getAttribute('y')),
+            square: mouseOverPiece.square.value,
+            piece: mouseOverPiece.piece.value,
+        });
+    }
+
+    const onMouseMove = (e) => {
+        if (!draggedPiece) return;
+
+        const x = draggedPiece.x - draggedPiece.clientX + e.clientX;
+        const y = draggedPiece.y - draggedPiece.clientY + e.clientY;
+        draggedPiece.el.setAttribute("x", x);
+        draggedPiece.el.setAttribute("y", y);
+    }
+
+    const onMouseOut = (e) => {
+        const attributes = e.target.attributes;
+        if (attributes.piece) setMouseOverPiece(null);
+    }
+
+    const onMouseOver = (e) => {
+        const attributes = e.target.attributes;
+        if (attributes.piece) setMouseOverPiece({ piece: attributes.piece, square: attributes.square });
+    }
+
+    const onMouseUp = (e) => {
+        if (!draggedPiece) return;
+
+        // snap back
+        draggedPiece.el.setAttribute("x", draggedPiece.x);
+        draggedPiece.el.setAttribute("y", draggedPiece.y);
+
+        setDraggedPiece(null);
+    }
+
+    const { width, position, orientation } = props;
     const squareSize = width / 8;
+    const pieces = renderPieceOrder(position, draggedPiece);
 
     return (
-        <svg width={width} height={width}
-            onClick={onMouseUp} onDoubleClick={onDoubleClick}
-            onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={onTouchCancel}
+        <svg ref={svgRef} width={width} height={width}
             onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseOut={onMouseOut} onMouseOver={onMouseOver}
-            onMouseLeave={onMouseUp}
-
+            onClick={onMouseUp} onMouseLeave={onMouseUp} onMouseUp={onMouseUp}
         >
             <defs>
-                <rect id="square" width={squareSize} height={squareSize} rx={squareSize/8}/>
+                <rect id="square" width={squareSize} height={squareSize} rx={squareSize / 8} />
                 {bP()}{bR()}{bN()}{bB()}{bQ()}{bK()}
                 {wP()}{wR()}{wN()}{wB()}{wQ()}{wK()}
             </defs>
             {renderSquares(squareSize, orientation)}
-            {renderPosition(position, squareSize, orientation)}
+            {renderPieces(pieces, squareSize, orientation)}
         </svg>
     );
 }
